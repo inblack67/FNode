@@ -9,14 +9,13 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flix',
-      theme: ThemeData.dark(),
       initialRoute: HomePage.id,
+      theme: ThemeData.dark(),
       routes: {
         HomePage.id: (context) => HomePage(),
         Login.id: (context) => Login(),
