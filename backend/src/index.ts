@@ -6,12 +6,16 @@ import 'colors';
 const main = async () => {
   const app = express();
 
+  app.use(express.json());
   app.use(cors());
-
   app.use(morgan('dev'));
 
   app.get('/', (_, res) => {
     res.status(200).json({ success: true, message: 'API up and running' });
+  });
+
+  app.post('/', (req, res) => {
+    res.status(200).json({ success: true, data: req.body });
   });
 
   const PORT = process.env.PORT || 5000;

@@ -45,9 +45,19 @@ class RegisterState extends State<Register> {
 
     if (form != null && form.validate()) {
       form.save();
-      print(_user.email);
-      print(_user.password);
-      print(_user.username);
+      Map<String, String> user = {
+        'email': _user.email,
+        'password': _user.password,
+        'username': _user.username,
+      };
+      var res = await http.post(Uri.parse(API_URL),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: json.encode(user));
+      var resBody = json.decode(res.body);
+      print(resBody);
       // Navigator.push(context, MaterialPageRoute(builder: (context) => Chat()));
     }
   }
