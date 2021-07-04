@@ -2,6 +2,8 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import 'colors';
+import { pongController } from './controllers/root.controller';
+import { registerController } from './controllers/register.controller';
 
 const main = async () => {
   const app = express();
@@ -10,13 +12,8 @@ const main = async () => {
   app.use(cors());
   app.use(morgan('dev'));
 
-  app.get('/', (_, res) => {
-    res.status(200).json({ success: true, message: 'API up and running' });
-  });
-
-  app.post('/', (req, res) => {
-    res.status(200).json({ success: true, data: req.body });
-  });
+  app.get('/api', pongController);
+  app.post('/api/register', registerController);
 
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
