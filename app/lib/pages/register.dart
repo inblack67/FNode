@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:chat_app/custom_widgets/custom_button.dart';
 import 'package:chat_app/entities/user.dart';
-import 'package:chat_app/pages/chat.dart';
+import 'package:chat_app/interfaces/api.dart';
+import 'package:chat_app/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -17,31 +18,12 @@ class Register extends StatefulWidget {
 class RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _user = User();
-
-  final String API_URL = 'http://localhost:5000/';
-  Map<String, dynamic> pong = {};
-
-  Future<void> pingAPI() async {
-    try {
-      var res = await http
-          .get(Uri.parse(API_URL), headers: {"Accept": "application/json"});
-      var resBody = json.decode(res.body);
-      setState(() {
-        pong = resBody;
-      });
-    } catch (err) {
-      print(err);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    this.pingAPI();
-  }
+  final _api = IAPI();
 
   Future<void> registerUser() async {
     final form = _formKey.currentState;
+    final _registerEndpoint = _api.url + _api.register;
+    print(_registerEndpoint);
 
     if (form != null && form.validate()) {
       form.save();
@@ -50,7 +32,7 @@ class RegisterState extends State<Register> {
         'password': _user.password,
         'username': _user.username,
       };
-      var res = await http.post(Uri.parse(API_URL),
+      var res = await http.post(Uri.parse(_registerEndpoint),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=UTF-8',
@@ -58,7 +40,13 @@ class RegisterState extends State<Register> {
           body: json.encode(user));
       var resBody = json.decode(res.body);
       print(resBody);
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => Chat()));
+      if (resBody.success) {
+        print(resBody.message);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Login()));
+      } else {
+        print(resBody.error);
+      }
     }
   }
 
@@ -87,6 +75,16 @@ class RegisterState extends State<Register> {
                     )),
               ),
               SizedBox(height: 40.0),
+              TextFormField(
+                decoration: InputDecoration(hintText: 'Enter your name'),
+                onChanged: (val) => _user.name = val,
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return 'Name is required';
+                  }
+                  return null;
+                },
+              ),
               TextFormField(
                 decoration: InputDecoration(hintText: 'Enter your email'),
                 keyboardType: TextInputType.emailAddress,
@@ -122,7 +120,6 @@ class RegisterState extends State<Register> {
               ),
               SizedBox(height: 30.0),
               CustomButton(title: 'Submit', callback: registerUser),
-              Text(pong['success'] == null ? 'Loading' : pong['message'])
             ],
           ),
         ),
