@@ -39,6 +39,9 @@ export const loginController = async (
       return;
     }
 
+    res.locals.session['user_id'] = user.id;
+    res.locals.session['username'] = user.username;
+
     res.status(200).json({ success: true, message: LOGIN_SUCCESSFUL });
   } catch (err: any) {
     const isValidationError = err instanceof ValidationError;

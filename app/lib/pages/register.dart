@@ -54,7 +54,7 @@ class RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.grey[700],
         title: Text('Register'),
         centerTitle: true,
       ),
@@ -69,7 +69,7 @@ class RegisterState extends State<Register> {
                     tag: 'logo',
                     child: CircleAvatar(
                       backgroundImage: AssetImage(
-                        'assets/images/elixir.jpeg',
+                        'assets/images/black.jpg',
                       ),
                       radius: 70.0,
                     )),

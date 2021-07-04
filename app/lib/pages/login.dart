@@ -52,7 +52,7 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.grey[700],
         title: Text('Login'),
         centerTitle: true,
       ),
@@ -67,7 +67,7 @@ class LoginState extends State<Login> {
                     tag: 'logo',
                     child: CircleAvatar(
                       backgroundImage: AssetImage(
-                        'assets/images/elixir.jpeg',
+                        'assets/images/black.jpg',
                       ),
                       radius: 70.0,
                     )),

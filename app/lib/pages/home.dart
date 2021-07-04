@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
                     tag: 'logo',
                     child: CircleAvatar(
                       backgroundImage: AssetImage(
-                        'assets/images/elixir.jpeg',
+                        'assets/images/black.jpg',
                       ),
                       radius: 70.0,
                     )),
