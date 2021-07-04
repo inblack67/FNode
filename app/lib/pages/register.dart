@@ -28,6 +28,7 @@ class RegisterState extends State<Register> {
     if (form != null && form.validate()) {
       form.save();
       Map<String, String> user = {
+        'name': _user.name,
         'email': _user.email,
         'password': _user.password,
         'username': _user.username,
@@ -40,12 +41,12 @@ class RegisterState extends State<Register> {
           body: json.encode(user));
       var resBody = json.decode(res.body);
       print(resBody);
-      if (resBody.success) {
-        print(resBody.message);
+      if (resBody['success']) {
+        print(resBody['message']);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Login()));
       } else {
-        print(resBody.error);
+        print(resBody['error']);
       }
     }
   }
