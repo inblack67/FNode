@@ -1,16 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import { registerSchema } from '../schema';
 import { ValidationError } from 'yup';
+import { ILocals } from '../interfaces';
 
 export const registerController = async (
   req: Request,
-  res: Response,
+  res: Response<any, ILocals>,
   _next: NextFunction,
 ) => {
   const body = req.body;
   try {
     const validationRes = await registerSchema.validate(body);
-    console.log(validationRes);
+    const user = await res.locals.prisma.user.create({
+      data: { ...validationRes },
+    });
+    res.status(201).json({ success: true, data: user });
   } catch (err: any) {
     const isValidationError = err instanceof ValidationError;
     if (isValidationError) {
@@ -22,6 +26,4 @@ export const registerController = async (
       console.error(err);
     }
   }
-
-  res.status(201).json({ success: true, data: body });
 };
