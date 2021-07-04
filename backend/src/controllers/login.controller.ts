@@ -52,6 +52,7 @@ export const loginController = async (
       console.log(`Login Controller Crashed`.red.bold);
       console.error(err);
       res.status(500).json({ success: false, error: INTERNAL_SERVER_ERROR });
+      return;
     }
   }
 };

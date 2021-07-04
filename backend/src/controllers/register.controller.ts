@@ -4,6 +4,7 @@ import { ValidationError } from 'yup';
 import { ILocals } from '../interfaces';
 import { INTERNAL_SERVER_ERROR, REGISTRATION_SUCCESSFUL } from '../constants';
 import Argon from 'argon2';
+import { capitalizeSentence } from '../utils';
 
 export const registerController = async (
   req: Request,
@@ -29,10 +30,17 @@ export const registerController = async (
         .status(400)
         .json({ success: false, error: { errors: validationErrors.errors } });
       return;
+    } else if (err.code === 'P2002') {
+      res.status(400).json({
+        success: false,
+        error: `${capitalizeSentence(err.meta.target[0])} is already taken`,
+      });
+      return;
     } else {
       console.log(`Register Controller Crashed`.red.bold);
       console.error(err);
       res.status(500).json({ success: false, error: INTERNAL_SERVER_ERROR });
+      return;
     }
   }
 };

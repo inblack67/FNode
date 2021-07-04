@@ -23,7 +23,6 @@ class RegisterState extends State<Register> {
   Future<void> registerUser() async {
     final form = _formKey.currentState;
     final _registerEndpoint = _api.url + _api.register;
-    print(_registerEndpoint);
 
     if (form != null && form.validate()) {
       form.save();

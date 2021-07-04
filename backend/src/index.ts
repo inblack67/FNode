@@ -6,6 +6,7 @@ import { pongController } from './controllers/root.controller';
 import { registerController } from './controllers/register.controller';
 import { populateLocals } from './middlewares';
 import { getPrismaClient } from './prisma';
+import { loginController } from './controllers/login.controller';
 
 const main = async () => {
   const prisma = getPrismaClient();
@@ -18,6 +19,7 @@ const main = async () => {
 
   app.get('/api', pongController);
   app.post('/api/register', registerController);
+  app.post('/api/login', loginController);
 
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
