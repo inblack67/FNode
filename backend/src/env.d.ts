@@ -5,5 +5,6 @@ declare namespace NodeJS {
     PORT: string;
     NODE_ENV: string;
     COOKIE_DOMAIN: string;
+    CRYPTO_KEY: string;
   }
 }
