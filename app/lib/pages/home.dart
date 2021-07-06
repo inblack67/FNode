@@ -1,4 +1,5 @@
 import 'package:chat_app/custom_widgets/custom_button.dart';
+import 'package:chat_app/pages/chat.dart';
 import 'package:chat_app/pages/login.dart';
 import 'package:chat_app/pages/register.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,11 @@ class HomePage extends StatelessWidget {
               title: 'Login',
               callback: () {
                 Navigator.of(context).pushNamed(Login.id);
+              }),
+          CustomButton(
+              title: 'Chat',
+              callback: () {
+                Navigator.of(context).pushNamed(Chat.id);
               }),
         ],
       ),
