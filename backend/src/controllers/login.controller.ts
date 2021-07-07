@@ -11,7 +11,7 @@ import {
 } from '../constants';
 import { encryptMe } from '../encryption';
 
-export const nLoginController = async (
+export const nativeLoginController = async (
   req: Request,
   res: Response<any, ILocals>,
   _next: NextFunction,
@@ -45,13 +45,14 @@ export const nLoginController = async (
     const ivString = iv.toString('hex').slice(0, 16);
 
     const tokenPayload: INativeSession = {
-      session_id: ivString,
       user,
     };
 
     const tokenPayloadJSON = JSON.stringify(tokenPayload);
 
     const token = encryptMe(tokenPayloadJSON, ivString);
+
+    await res.locals.redis.set(token, ivString, 'ex', 60 * 24); // expires after one hour
 
     res.status(200).json({
       success: true,

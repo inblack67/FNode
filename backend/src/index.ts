@@ -7,12 +7,16 @@ import session from 'express-session';
 import 'colors';
 import { pongController } from './controllers/root.controller';
 import { registerController } from './controllers/register.controller';
-import { neglect, populateLocals, protect } from './middlewares';
+import {
+  nativeNeglect,
+  nativeProtect,
+  populateLocals,
+} from './middlewares';
 import { getPrismaClient } from './prisma';
-import { loginController } from './controllers/login.controller';
+import { nativeLoginController } from './controllers/login.controller';
 import { isProd } from './utils';
-import { getMeController } from './controllers/getMe.controller';
-import { logoutController } from './controllers/logout.controller';
+import { nativeGetMeController } from './controllers/getMe.controller';
+import { nativeLogoutController } from './controllers/logout.controller';
 
 const main = async () => {
   const prisma = getPrismaClient();
@@ -48,10 +52,10 @@ const main = async () => {
   app.use(populateLocals({ prisma, redis: RedisClient }));
 
   app.get('/api', pongController);
-  app.post('/api/register', neglect, registerController);
-  app.post('/api/login', neglect, loginController);
-  app.get('/api/getMe', protect, getMeController);
-  app.post('/api/logout', protect, logoutController);
+  app.post('/api/register', nativeNeglect, registerController);
+  app.post('/api/login', nativeNeglect, nativeLoginController);
+  app.get('/api/getMe', nativeProtect, nativeGetMeController);
+  app.post('/api/logout', nativeProtect, nativeLogoutController);
 
   const PORT = process.env.PORT;
   app.listen(PORT, () => {

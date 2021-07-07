@@ -12,29 +12,47 @@ export const populateLocals =
     next();
   };
 
-export const nativeProtect = (
+export const nativeProtect = async (
   req: Request,
   res: Response<any, ILocals>,
   next: NextFunction,
 ) => {
   if (req.headers.authorization?.startsWith('Bearer')) {
     const token = req.headers.authorization.split(' ')[1];
+    const ivString = await res.locals.redis.get(token);
+    if (ivString) {
+      const tokenPayload: INativeSession = JSON.parse(
+        decryptMe(token, ivString),
+      );
+      if (tokenPayload.user) {
+        res.locals['current_user'] = tokenPayload.user;
+        res.locals['current_user_token'] = token;
+        next();
+        return;
+      }
+    }
   }
-
-  if (res.locals.session.username) {
-    next();
-  } else {
-    res.status(400).json({ success: false, error: NOT_AUTHENTICATED });
-  }
+  res.status(400).json({ success: false, error: NOT_AUTHENTICATED });
 };
 
-export const nativeNeglect = (
-  _req: Request,
+export const nativeNeglect = async (
+  req: Request,
   res: Response<any, ILocals>,
   next: NextFunction,
 ) => {
-  if (res.locals.session.username) {
-    res.status(400).json({ success: false, error: NOT_AUTHORIZED });
+  if (req.headers.authorization?.startsWith('Bearer')) {
+    const token = req.headers.authorization.split(' ')[1];
+    const ivString = await res.locals.redis.get(token);
+    if (ivString) {
+      const tokenPayload: INativeSession = JSON.parse(
+        decryptMe(token, ivString),
+      );
+
+      if (tokenPayload.user) {
+        res.status(400).json({ success: false, error: NOT_AUTHORIZED });
+        return;
+      }
+    }
   } else {
     next();
   }

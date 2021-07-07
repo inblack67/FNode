@@ -11,9 +11,10 @@ export interface ILocals {
   redis: Redis;
   prisma: PrismaClient;
   session: ISession;
+  current_user?: User;
+  current_user_token?: string;
 }
 
 export interface INativeSession {
-  session_id: string | number;
   user: User;
 }
