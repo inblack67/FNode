@@ -4,6 +4,7 @@ import 'package:chat_app/custom_widgets/custom_button.dart';
 import 'package:chat_app/entities/user.dart';
 import 'package:chat_app/interfaces/api.dart';
 import 'package:chat_app/pages/login.dart';
+import 'package:chat_app/utils/protect.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +19,19 @@ class Register extends StatefulWidget {
 class RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _user = User();
+
+  Future<void> protectMe() async {
+    bool isAllowed = await Protect.allowed(authenticated: false);
+    if (!isAllowed) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    protectMe();
+  }
 
   Future<void> registerUser() async {
     final form = _formKey.currentState;

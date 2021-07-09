@@ -6,6 +6,7 @@ import 'package:chat_app/interfaces/login_response.dart';
 import 'package:chat_app/pages/chat.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/hive.dart';
+import 'package:chat_app/utils/protect.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,6 +22,19 @@ class LoginState extends State<Login> {
 
   String _username = '';
   String _password = '';
+
+  Future<void> protectMe() async {
+    bool isAllowed = await Protect.allowed(authenticated: false);
+    if (!isAllowed) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    protectMe();
+  }
 
   Future<void> loginUser() async {
     final form = _formKey.currentState;

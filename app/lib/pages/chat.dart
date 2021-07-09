@@ -4,8 +4,6 @@ import 'package:chat_app/custom_widgets/custom_send_button.dart';
 import 'package:chat_app/custom_widgets/message.dart';
 import 'package:chat_app/faker.dart';
 import 'package:chat_app/interfaces/api.dart';
-import 'package:chat_app/pages/home.dart';
-import 'package:chat_app/pages/login.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/hive.dart';
 import 'package:flutter/material.dart';
