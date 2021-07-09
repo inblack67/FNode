@@ -52,7 +52,7 @@ export const nativeLoginController = async (
 
     const token = encryptMe(tokenPayloadJSON, ivString);
 
-    await res.locals.redis.set(token, ivString, 'ex', 60 * 24); // expires after one hour
+    await res.locals.redis.set(token, ivString, 'ex', 60 * 60 * 24 * 30); // expires after 30 days
 
     res.status(200).json({
       success: true,

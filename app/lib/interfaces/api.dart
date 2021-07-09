@@ -1,6 +1,7 @@
 class IAPI {
-  final String url = 'http://localhost:5000/api';
-  final String root = '/';
-  final String register = '/register';
-  final String login = '/login';
+  static final String url = 'http://localhost:5000/api';
+  static final String root = '/';
+  static final String register = '/register';
+  static final String login = '/login';
+  static final String getMe = '/getMe';
 }

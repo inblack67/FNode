@@ -18,11 +18,10 @@ class Register extends StatefulWidget {
 class RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _user = User();
-  final _api = IAPI();
 
   Future<void> registerUser() async {
     final form = _formKey.currentState;
-    final _registerEndpoint = _api.url + _api.register;
+    final _registerEndpoint = IAPI.url + IAPI.register;
 
     if (form != null && form.validate()) {
       form.save();

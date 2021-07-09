@@ -4,6 +4,8 @@ import 'package:chat_app/custom_widgets/custom_button.dart';
 import 'package:chat_app/interfaces/api.dart';
 import 'package:chat_app/interfaces/login_response.dart';
 import 'package:chat_app/pages/chat.dart';
+import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,14 +18,13 @@ class Login extends StatefulWidget {
 
 class LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
-  final _api = IAPI();
 
   String _username = '';
   String _password = '';
 
   Future<void> loginUser() async {
     final form = _formKey.currentState;
-    final _loginEndpoint = _api.url + _api.login;
+    final _loginEndpoint = IAPI.url + IAPI.login;
 
     if (form != null && form.validate()) {
       form.save();
@@ -42,9 +43,17 @@ class LoginState extends State<Login> {
       if (resBody['success']) {
         var res = RLogin.successResponsefromJSON(resBody);
         String token = res.data['token'];
-        print(token);
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Chat()));
+
+        final _tokensEncryptionBox =
+            await MHive.getEncryptionBox(Constants.tokensEncryptionBoxName);
+
+        bool addSecretRes =
+            MHive.addSecret(_tokensEncryptionBox, Constants.tokenKey, token);
+
+        if (addSecretRes) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Chat()));
+        }
       } else {
         print(resBody['error']);
       }
