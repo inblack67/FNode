@@ -47,8 +47,8 @@ class LoginState extends State<Login> {
         final _tokensEncryptionBox =
             await MHive.getEncryptionBox(Constants.tokensEncryptionBoxName);
 
-        bool addSecretRes =
-            MHive.addSecret(_tokensEncryptionBox, Constants.tokenKey, token);
+        bool addSecretRes = await MHive.addSecret(
+            _tokensEncryptionBox, Constants.tokenKey, token);
 
         if (addSecretRes) {
           Navigator.push(

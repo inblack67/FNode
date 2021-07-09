@@ -29,13 +29,20 @@ class MHive {
     }
   }
 
-  static bool addSecret(Box<dynamic> encryptedBox, String key, dynamic value) {
-    encryptedBox.put(key, value);
+  static Future<bool> addSecret(
+      Box<dynamic> encryptedBox, String key, dynamic value) async {
+    await encryptedBox.put(key, value);
     return true;
   }
 
-  static dynamic getSecret(Box<dynamic> encryptedBox, String key) {
-    dynamic value = encryptedBox.get(key);
+  static dynamic getSecret(Box<dynamic> encryptedBox, String key) async {
+    dynamic value = await encryptedBox.get(key);
     return value;
+  }
+
+  static Future<bool> deleteSecret(
+      Box<dynamic> encryptedBox, String key) async {
+    await encryptedBox.delete(key);
+    return true;
   }
 }

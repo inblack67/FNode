@@ -4,4 +4,5 @@ class IAPI {
   static final String register = '/register';
   static final String login = '/login';
   static final String getMe = '/getMe';
+  static final String logout = '/logout';
 }
