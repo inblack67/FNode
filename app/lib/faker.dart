@@ -1,5 +1,3 @@
-import 'package:chat_app/entities/user.dart';
-
 class Faker {
   static dynamic currentUser = {
     "user": {"username": "inblack67"}

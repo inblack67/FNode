@@ -22,7 +22,7 @@ const main = async () => {
   const prisma = getPrismaClient();
 
   const RedisClient = new Redis();
-  // await RedisClient.flushall();
+  await RedisClient.flushall();
   const RedisSessionStore = connectRedis(session);
   const store = new RedisSessionStore({ client: RedisClient });
   const app = express();

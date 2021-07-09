@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chat_app/custom_widgets/custom_button.dart';
 import 'package:chat_app/interfaces/api.dart';
+import 'package:chat_app/interfaces/login_response.dart';
 import 'package:chat_app/pages/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,15 +32,17 @@ class LoginState extends State<Login> {
         'password': _password,
       };
       var res = await http.post(Uri.parse(_loginEndpoint),
-          headers: {
+          headers: <String, String>{
             'Accept': 'application/json',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          body: json.encode(user));
+          body: jsonEncode(user));
       var resBody = json.decode(res.body);
-      print(resBody);
+      // print(resBody);
       if (resBody['success']) {
-        print(resBody['message']);
+        var res = RLogin.successResponsefromJSON(resBody);
+        String token = res.data['token'];
+        print(token);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Chat()));
       } else {
