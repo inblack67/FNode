@@ -21,7 +21,7 @@ class ChatState extends State<Chat> {
   dynamic _messages = [];
 
   TextEditingController messageController = TextEditingController();
-  ScrollController scrollController = ScrollController();
+  ScrollController scrollController = ScrollController(keepScrollOffset: false);
 
   void populateAuth() async {
     final _tokensEncryptionBox =
@@ -90,6 +90,11 @@ class ChatState extends State<Chat> {
       print(resBody);
       if (resBody['success']) {
         getMessages();
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 300),
+        );
       }
     }
   }
@@ -114,6 +119,12 @@ class ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback(((_) => scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 300),
+    )));
+    
     return Scaffold(
       appBar: AppBar(
         leading: Hero(
@@ -144,6 +155,7 @@ class ChatState extends State<Chat> {
             children: <Widget>[
               Expanded(
                   child: ListView.builder(
+                controller: scrollController,
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   String messageContent = _messages[index]['content'];
