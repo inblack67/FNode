@@ -11,3 +11,8 @@ export const loginSchema = yup.object().shape({
   username: yup.string().required('Username is required'),
   password: yup.string().required('Password is required'),
 });
+
+export const addMessageSchema = yup.object().shape({
+  content: yup.string().required('Content is required'),
+  type: yup.string(),
+});

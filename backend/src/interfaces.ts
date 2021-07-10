@@ -18,3 +18,9 @@ export interface ILocals {
 export interface INativeSession {
   user: User;
 }
+
+export interface IMessage {
+  content: string;
+  type?: string;
+  userId: string | number;
+}

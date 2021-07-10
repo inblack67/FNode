@@ -7,22 +7,20 @@ import session from 'express-session';
 import 'colors';
 import { pongController } from './controllers/root.controller';
 import { registerController } from './controllers/register.controller';
-import {
-  nativeNeglect,
-  nativeProtect,
-  populateLocals,
-} from './middlewares';
+import { nativeNeglect, nativeProtect, populateLocals } from './middlewares';
 import { getPrismaClient } from './prisma';
 import { nativeLoginController } from './controllers/login.controller';
 import { isProd } from './utils';
 import { nativeGetMeController } from './controllers/getMe.controller';
 import { nativeLogoutController } from './controllers/logout.controller';
+import { addMessageController } from './controllers/addMessage.controller';
+import { getMessagesController } from './controllers/getMessages.controller';
 
 const main = async () => {
   const prisma = getPrismaClient();
 
   const RedisClient = new Redis();
-  await RedisClient.flushall();
+  // await RedisClient.flushall();
   const RedisSessionStore = connectRedis(session);
   const store = new RedisSessionStore({ client: RedisClient });
   const app = express();
@@ -56,6 +54,8 @@ const main = async () => {
   app.post('/api/login', nativeNeglect, nativeLoginController);
   app.get('/api/getMe', nativeProtect, nativeGetMeController);
   app.post('/api/logout', nativeProtect, nativeLogoutController);
+  app.post('/api/message', nativeProtect, addMessageController);
+  app.get('/api/messages', nativeProtect, getMessagesController);
 
   const PORT = process.env.PORT;
   app.listen(PORT, () => {
