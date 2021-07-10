@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chat_app/custom_widgets/custom_send_button.dart';
+import 'package:chat_app/custom_widgets/loading.dart';
 import 'package:chat_app/custom_widgets/message.dart';
 import 'package:chat_app/interfaces/api.dart';
 import 'package:chat_app/utils/constants.dart';
@@ -19,6 +20,8 @@ class ChatState extends State<Chat> {
   String _me = '';
   String _token = '';
   dynamic _messages = [];
+  bool _loading = true;
+  bool _scrollToEnd = false;
 
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController(keepScrollOffset: false);
@@ -32,7 +35,6 @@ class ChatState extends State<Chat> {
       'Authorization': 'Bearer $token',
     });
     var resBody = jsonDecode(res.body);
-    print(resBody);
     if (resBody['success']) {
       String current_username = resBody['data']['username'];
       setState(() {
@@ -56,10 +58,11 @@ class ChatState extends State<Chat> {
         'Authorization': 'Bearer $token',
       });
       var resBody = jsonDecode(res.body);
-      print(resBody);
       if (resBody['success']) {
         setState(() {
           _messages = resBody['data']['messages'];
+          _loading = false;
+          _scrollToEnd = true;
         });
       }
     } catch (e) {
@@ -77,8 +80,6 @@ class ChatState extends State<Chat> {
   Future<void> sendMessage() async {
     String message = messageController.text;
     if (message.length > 0) {
-      print('new message');
-      print(message);
       var res = await http.post(Uri.parse(IAPI.url + IAPI.addMessage),
           headers: {
             'Accept': 'application/json',
@@ -87,7 +88,6 @@ class ChatState extends State<Chat> {
           },
           body: jsonEncode({"content": message}));
       var resBody = jsonDecode(res.body);
-      print(resBody);
       if (resBody['success']) {
         getMessages();
         scrollController.animateTo(
@@ -111,7 +111,6 @@ class ChatState extends State<Chat> {
             await MHive.getEncryptionBox(Constants.tokensEncryptionBoxName);
         await MHive.deleteSecret(_encryptedBox, Constants.tokenKey);
       }
-      print(resBody);
     } catch (e) {
       print(e);
     }
@@ -119,22 +118,35 @@ class ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback(((_) => scrollController.animateTo(
-      scrollController.position.maxScrollExtent,
-      curve: Curves.easeOut,
-      duration: const Duration(milliseconds: 300),
-    )));
-    
+    WidgetsBinding.instance?.addPostFrameCallback(((_) {
+      if (_scrollToEnd) {
+        scrollController.animateTo(
+          scrollController.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 300),
+        );
+      }
+    }));
+
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        leading: Hero(
-            tag: 'logo',
-            child: CircleAvatar(
-              backgroundImage: AssetImage(
-                'assets/images/black.jpg',
-              ),
-              radius: 100.0,
-            )),
+        backgroundColor: Colors.black,
+        leading: Material(
+          color: Colors.black,
+          child: InkWell(
+            child: Hero(
+                tag: 'logo',
+                child: CircleAvatar(
+                  backgroundImage: AssetImage(
+                    'assets/images/black.jpg',
+                  ),
+                  radius: 70.0,
+                  backgroundColor: Colors.black,
+                )),
+            onTap: () {},
+          ),
+        ),
         title: Text('FNode'),
         actions: <Widget>[
           IconButton(
@@ -147,52 +159,56 @@ class ChatState extends State<Chat> {
               )),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                  child: ListView.builder(
-                controller: scrollController,
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  String messageContent = _messages[index]['content'];
-                  String messageUsername = _messages[index]['User']['username'];
-                  bool me = messageUsername == _me;
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Message(
-                        username: messageUsername,
-                        content: messageContent,
-                        me: me),
-                  );
-                  // return ListTile(
-                  //   title: Text(messageContent),
-                  // );
-                },
-              )),
-              SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                child: Row(
+      body: _loading
+          ? Loading()
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Expanded(
-                        child: TextField(
-                      controller: messageController,
-                      decoration: InputDecoration(hintText: 'Start typing...'),
+                        child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) {
+                        String messageContent = _messages[index]['content'];
+                        String messageUsername =
+                            _messages[index]['User']['username'];
+                        bool me = messageUsername == _me;
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Message(
+                              username: messageUsername,
+                              content: messageContent,
+                              me: me),
+                        );
+                        // return ListTile(
+                        //   title: Text(messageContent),
+                        // );
+                      },
                     )),
-                    CustomSendButton(text: 'Send', callback: sendMessage),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                              child: TextField(
+                            controller: messageController,
+                            decoration:
+                                InputDecoration(hintText: 'Start typing...'),
+                          )),
+                          CustomSendButton(text: 'Send', callback: sendMessage),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            ),
     );
   }
 }

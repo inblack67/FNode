@@ -53,7 +53,6 @@ class LoginState extends State<Login> {
           },
           body: jsonEncode(user));
       var resBody = json.decode(res.body);
-      // print(resBody);
       if (resBody['success']) {
         var res = RLogin.successResponsefromJSON(resBody);
         String token = res.data['token'];
@@ -68,8 +67,6 @@ class LoginState extends State<Login> {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Chat()));
         }
-      } else {
-        print(resBody['error']);
       }
     }
   }
@@ -77,8 +74,9 @@ class LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.grey[700],
+        backgroundColor: Colors.black,
         title: Text('Login'),
         centerTitle: true,
       ),

@@ -9,11 +9,12 @@ class CustomSendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: ElevatedButton(
+      child: MaterialButton(
         onPressed: callback,
         child: Text(text),
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)),
+        color: Colors.red,
+        minWidth: 80.0,
+        height: 50.0,
       ),
     );
   }

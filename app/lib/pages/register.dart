@@ -52,13 +52,9 @@ class RegisterState extends State<Register> {
           },
           body: json.encode(user));
       var resBody = json.decode(res.body);
-      print(resBody);
       if (resBody['success']) {
-        print(resBody['message']);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Login()));
-      } else {
-        print(resBody['error']);
       }
     }
   }
@@ -66,8 +62,9 @@ class RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.grey[700],
+        backgroundColor: Colors.black,
         title: Text('Register'),
         centerTitle: true,
       ),
@@ -89,7 +86,9 @@ class RegisterState extends State<Register> {
               ),
               SizedBox(height: 40.0),
               TextFormField(
-                decoration: InputDecoration(hintText: 'Enter your name'),
+                decoration: InputDecoration(
+                  hintText: 'Enter your name',
+                ),
                 onChanged: (val) => _user.name = val,
                 validator: (val) {
                   if (val == null || val.isEmpty) {
@@ -99,7 +98,9 @@ class RegisterState extends State<Register> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(hintText: 'Enter your email'),
+                decoration: InputDecoration(
+                  hintText: 'Enter your email',
+                ),
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (val) => _user.email = val,
                 validator: (val) {
@@ -113,7 +114,9 @@ class RegisterState extends State<Register> {
                 autocorrect: false,
                 obscureText: true,
                 onChanged: (val) => _user.password = val,
-                decoration: InputDecoration(hintText: 'Enter password'),
+                decoration: InputDecoration(
+                  hintText: 'Enter password',
+                ),
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return 'Password is required';
@@ -123,7 +126,9 @@ class RegisterState extends State<Register> {
               ),
               TextFormField(
                 onChanged: (val) => _user.username = val,
-                decoration: InputDecoration(hintText: 'Enter username'),
+                decoration: InputDecoration(
+                  hintText: 'Enter username',
+                ),
                 validator: (val) {
                   if (val == null || val.isEmpty) {
                     return 'Username is required';
