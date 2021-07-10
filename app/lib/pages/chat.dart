@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:chat_app/custom_widgets/custom_send_button.dart';
 import 'package:chat_app/custom_widgets/message.dart';
-import 'package:chat_app/faker.dart';
 import 'package:chat_app/interfaces/api.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/hive.dart';
@@ -19,6 +18,7 @@ class Chat extends StatefulWidget {
 class ChatState extends State<Chat> {
   String _me = '';
   String _token = '';
+  dynamic _messages = [];
 
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController();
@@ -44,17 +44,53 @@ class ChatState extends State<Chat> {
     }
   }
 
+  Future<void> getMessages() async {
+    try {
+      final _tokensEncryptionBox =
+          await MHive.getEncryptionBox(Constants.tokensEncryptionBoxName);
+      var token =
+          await MHive.getSecret(_tokensEncryptionBox, Constants.tokenKey);
+      var res =
+          await http.get(Uri.parse(IAPI.url + IAPI.getMessages), headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+      var resBody = jsonDecode(res.body);
+      print(resBody);
+      if (resBody['success']) {
+        setState(() {
+          _messages = resBody['data']['messages'];
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     populateAuth();
+    getMessages();
   }
 
-  void sendMessage() {
+  Future<void> sendMessage() async {
     String message = messageController.text;
     if (message.length > 0) {
       print('new message');
       print(message);
+      var res = await http.post(Uri.parse(IAPI.url + IAPI.addMessage),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $_token',
+          },
+          body: jsonEncode({"content": message}));
+      var resBody = jsonDecode(res.body);
+      print(resBody);
+      if (resBody['success']) {
+        getMessages();
+      }
     }
   }
 
@@ -108,15 +144,17 @@ class ChatState extends State<Chat> {
             children: <Widget>[
               Expanded(
                   child: ListView.builder(
-                itemCount: Faker.messages.length,
+                itemCount: _messages.length,
                 itemBuilder: (context, index) {
-                  String messageContent = Faker.messages[index]['content'];
-                  bool me = Faker.messages[index]['user']['username'] ==
-                      Faker.currentUser['user']['username'];
+                  String messageContent = _messages[index]['content'];
+                  String messageUsername = _messages[index]['User']['username'];
+                  bool me = messageUsername == _me;
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
-                        Message(username: _me, content: messageContent, me: me),
+                    child: Message(
+                        username: messageUsername,
+                        content: messageContent,
+                        me: me),
                   );
                   // return ListTile(
                   //   title: Text(messageContent),

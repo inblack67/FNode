@@ -5,4 +5,6 @@ class IAPI {
   static final String login = '/login';
   static final String getMe = '/getMe';
   static final String logout = '/logout';
+  static final String addMessage = '/message';
+  static final String getMessages = '/messages';
 }
