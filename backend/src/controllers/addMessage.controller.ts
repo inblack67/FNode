@@ -1,7 +1,7 @@
 import { MessageType } from '@prisma/client';
 import { NextFunction, Response, Request } from 'express';
 import { ValidationError } from 'yup';
-import { INTERNAL_SERVER_ERROR } from '../constants';
+import { INTERNAL_SERVER_ERROR, NEW_MESSAGE } from '../constants';
 import { ILocals, IMessage } from '../interfaces';
 import { addMessageSchema } from '../schema';
 
@@ -19,12 +19,15 @@ export const addMessageController = async (
     if (validationRes.type) {
       newMessageData['type'] = validationRes.type;
     }
-    await res.locals.prisma.message.create({
+    const createdMessage = await res.locals.prisma.message.create({
       data: {
         userId: res.locals.current_user!.id,
         content: validationRes.content,
         type: (validationRes.type as MessageType) ?? 'text',
       },
+    });
+    res.locals.socket.emit(NEW_MESSAGE, {
+      message: createdMessage,
     });
     res.status(201).json({ success: true });
   } catch (err: any) {

@@ -1,4 +1,6 @@
+import http from 'http';
 import express from 'express';
+import { Server } from 'socket.io';
 import morgan from 'morgan';
 import cors from 'cors';
 import Redis from 'ioredis';
@@ -24,6 +26,15 @@ const main = async () => {
   const RedisSessionStore = connectRedis(session);
   const store = new RedisSessionStore({ client: RedisClient });
   const app = express();
+  const server = http.createServer(app);
+  const io = new Server(server);
+
+  io.on('connect', (socket) => {
+    console.log('Socket connected'.blue.bold);
+    socket.on('msg', (data) => {
+      console.log(data);
+    });
+  });
 
   app.use(express.json());
   app.use(cors());
@@ -47,7 +58,7 @@ const main = async () => {
     }),
   );
 
-  app.use(populateLocals({ prisma, redis: RedisClient }));
+  app.use(populateLocals({ prisma, redis: RedisClient, socket: io }));
 
   app.get('/api', pongController);
   app.post('/api/register', nativeNeglect, registerController);
@@ -58,7 +69,7 @@ const main = async () => {
   app.get('/api/messages', nativeProtect, getMessagesController);
 
   const PORT = process.env.PORT;
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server started at port ${PORT}`.blue.bold);
   });
 };

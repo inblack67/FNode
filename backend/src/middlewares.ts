@@ -4,10 +4,11 @@ import { decryptMe } from './encryption';
 import { ILocals, INativeSession } from './interfaces';
 
 export const populateLocals =
-  ({ prisma, redis }: Omit<ILocals, 'session'>) =>
+  ({ prisma, redis, socket }: Omit<ILocals, 'session'>) =>
   (req: Request, res: Response<any, ILocals>, next: NextFunction) => {
     res.locals['prisma'] = prisma;
     res.locals['redis'] = redis;
+    res.locals['socket'] = socket;
     res.locals['session'] = req.session;
     next();
   };

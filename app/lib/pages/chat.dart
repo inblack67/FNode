@@ -8,6 +8,7 @@ import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/hive.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Chat extends StatefulWidget {
   static const id = 'CHAT';
@@ -22,9 +23,26 @@ class ChatState extends State<Chat> {
   dynamic _messages = [];
   bool _loading = true;
   bool _scrollToEnd = false;
+  dynamic socketIO = null;
 
   TextEditingController messageController = TextEditingController();
   ScrollController scrollController = ScrollController(keepScrollOffset: false);
+
+  void connectSocket() {
+    print('connecting to socket.io...');
+    IO.Socket socket = IO.io(
+        'http://localhost:5000',
+        IO.OptionBuilder()
+            .setTransports(['websocket']) // for Flutter or Dart VM
+            .build());
+    socket.onConnect((_) {
+      print('connect');
+      socket.emit('msg', 'test');
+    });
+    socket.on('event', (data) => print(data));
+    socket.onDisconnect((_) => print('disconnect'));
+    socket.on('fromServer', (_) => print(_));
+  }
 
   void populateAuth() async {
     final _tokensEncryptionBox =
@@ -75,6 +93,7 @@ class ChatState extends State<Chat> {
     super.initState();
     populateAuth();
     getMessages();
+    connectSocket();
   }
 
   Future<void> sendMessage() async {
